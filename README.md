@@ -12,6 +12,16 @@ Laravel Eloquent Query Cache
 Laravel Eloquent Query Cache brings back the `remember()` functionality that has been removed from Laravel a long time ago.
 It adds caching functionalities directly on the Eloquent level, making use of cache within your database queries.
 
+## Fork notice
+
+This is a Calq fork of [renoki-co/laravel-eloquent-query-cache](https://github.com/renoki-co/laravel-eloquent-query-cache),
+maintained to keep the package working on Laravel 13. Changes against upstream `3.6.1`:
+
+- `src/Traits/QueryCacheable.php` registers the flush observer without instantiating the model, because Laravel 13
+  throws when `observe()` is called while the model is still booting.
+- `composer.json` allows `illuminate/database` and `illuminate/support` `^13.0`.
+- The test suite runs on Laravel 13, Livewire 4 and PHPUnit 13.
+
 ## 🤝 Supporting
 
 **If you are using one or more Renoki Co. open-source packages in your production apps, in presentation demos, hobby projects, school projects or so, sponsor our work with [Github Sponsors](https://github.com/sponsors/rennokki). 📦**
