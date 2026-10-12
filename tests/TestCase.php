@@ -15,8 +15,12 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        if ($this->getProvidedData() && method_exists(Model::class, 'preventAccessingMissingAttributes')) {
-            [$strict] = $this->getProvidedData();
+        $providedData = method_exists($this, 'providedData')
+            ? $this->providedData()
+            : $this->getProvidedData();
+
+        if ($providedData && method_exists(Model::class, 'preventAccessingMissingAttributes')) {
+            [$strict] = $providedData;
             Model::preventAccessingMissingAttributes($strict);
         }
 
@@ -80,6 +84,22 @@ abstract class TestCase extends Orchestra
     protected function resetDatabase()
     {
         file_put_contents(__DIR__.'/database/database.sqlite', null);
+    }
+
+    /**
+     * Get the cache key for an aggregate query, as the active grammar writes it.
+     *
+     * @param  string  $model
+     * @param  string  $function
+     * @param  array  $columns
+     * @return string
+     */
+    protected function aggregateCacheKey(string $model, string $function = 'count', array $columns = ['*']): string
+    {
+        $query = $model::query()->getQuery();
+        $query->aggregate = ['function' => $function, 'columns' => $columns];
+
+        return 'leqc:sqliteget'.$query->toSql().serialize($query->getBindings());
     }
 
     /**

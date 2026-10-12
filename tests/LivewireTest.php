@@ -15,27 +15,19 @@ class LivewireTest extends TestCase
     public function test_livewire_component_poll_doesnt_break_when_callback_is_already_set()
     {
         // See: https://github.com/renoki-co/laravel-eloquent-query-cache/issues/163
-        Livewire::component(PostComponent::class);
+        Livewire::component('post', PostComponent::class);
 
         $posts = factory(Post::class, 30)->create();
 
-        /** @var \Livewire\Testing\TestableLivewire $component */
-        Livewire::test(PostComponent::class, ['post' => $posts->first()])
+        Livewire::test('post', ['post' => $posts->first()])
             ->assertOk()
             ->assertSee($posts[0]->name)
-            ->pretendWereSendingAComponentUpdateRequest(
-                'callMethod',
-                ['id' => 'grwk', 'method' => '$refresh', 'params' => []],
-            );
+            ->call('$refresh')
+            ->assertOk();
     }
 }
 
 class PostComponent extends Component
 {
     public Post $post;
-
-    public function getName()
-    {
-        return 'post';
-    }
 }
