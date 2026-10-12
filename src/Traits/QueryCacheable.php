@@ -2,6 +2,7 @@
 
 namespace Rennokki\QueryCache\Traits;
 
+use ReflectionClass;
 use Rennokki\QueryCache\FlushQueryCacheObserver;
 use Rennokki\QueryCache\Query\Builder;
 
@@ -29,9 +30,27 @@ trait QueryCacheable
     {
         /** @var \Illuminate\Database\Eloquent\Model $this */
         if (isset(static::$flushCacheOnUpdate) && static::$flushCacheOnUpdate) {
-            static::observe(
+            static::registerFlushQueryCacheObserver(
                 static::getFlushQueryCacheObserver()
             );
+        }
+    }
+
+    /**
+     * Register the flush observer's handlers on the model's events.
+     *
+     * @param  string  $observer
+     * @return void
+     */
+    protected static function registerFlushQueryCacheObserver($observer)
+    {
+        // Laravel 13 throws if observe() instantiates the model while it is still booting.
+        $instance = (new ReflectionClass(static::class))->newInstanceWithoutConstructor();
+
+        foreach ($instance->getObservableEvents() as $event) {
+            if (method_exists($observer, $event)) {
+                static::registerModelEvent($event, $observer.'@'.$event);
+            }
         }
     }
 
