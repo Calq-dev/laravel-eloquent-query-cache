@@ -19,8 +19,10 @@ maintained to keep the package working on Laravel 13. Changes against upstream `
 
 - `src/Traits/QueryCacheable.php` registers the flush observer without instantiating the model, because Laravel 13
   throws when `observe()` is called while the model is still booting.
-- `composer.json` allows `illuminate/database` and `illuminate/support` `^13.0`.
-- The test suite runs on Laravel 13, Livewire 4 and PHPUnit 13.
+- `composer.json` supports `illuminate/database` and `illuminate/support` `^12.0|^13.0`. Laravel 10 and 11 are
+  dropped: every one of their releases is blocked by a Composer security advisory, so they can no longer be
+  installed or tested without disabling advisory checks.
+- The test suite runs on Laravel 12 and 13, Livewire 4 and PHPUnit 13.
 
 ## 🤝 Supporting
 
