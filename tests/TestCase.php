@@ -57,10 +57,10 @@ abstract class TestCase extends Orchestra
             'prefix' => '',
         ]);
 
-        $app['config']->set(
-            'cache.driver',
-            getenv('CACHE_DRIVER') ?: env('CACHE_DRIVER', 'array')
-        );
+        $cacheDriver = getenv('CACHE_DRIVER') ?: env('CACHE_DRIVER', 'array');
+
+        $app['config']->set('cache.default', $cacheDriver);
+        $app['config']->set('cache.driver', $cacheDriver);
 
         $app['config']->set('auth.providers.users.model', User::class);
         $app['config']->set('auth.providers.posts.model', Post::class);
@@ -139,6 +139,6 @@ abstract class TestCase extends Orchestra
      */
     protected function driverSupportsTags(): bool
     {
-        return ! in_array(config('cache.driver'), ['file', 'database']);
+        return ! in_array(config('cache.default'), ['file', 'database']);
     }
 }
